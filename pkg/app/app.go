@@ -96,7 +96,7 @@ func (a App) Run(ctx context.Context) {
 }
 
 func (a App) SendMessage(msg *tgbotapi.Message, msgText string) {
-	newMsg := tgbotapi.NewMessage(msg.Chat.ID, "Your Pomodoro timer is started")
+	newMsg := tgbotapi.NewMessage(msg.Chat.ID, msgText)
 	newMsg.ReplyToMessageID = msg.MessageID
 	if _, err := a.bot.Send(newMsg); err != nil {
 		log.Println("Could not send message:", err)
