@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"log"
 	"os"
 	"os/signal"
@@ -12,10 +11,9 @@ import (
 )
 
 func main() {
-	token := flag.String("token", "", "Token of Telegram bot")
-	flag.Parse()
+	token := os.Getenv("TOKEN")
 
-	program, err := app.NewApp(*token)
+	program, err := app.NewApp(token)
 	if err != nil {
 		log.Println("Could not create new Pomodoro program:", err)
 		os.Exit(1)
