@@ -15,7 +15,7 @@ const (
 
 type App struct {
 	bot   *tgbotapi.BotAPI
-	users map[string]worker
+	users map[int64]worker
 }
 
 func NewApp(token string) (App, error) {
@@ -27,11 +27,11 @@ func NewApp(token string) (App, error) {
 	setCommands := tgbotapi.NewSetMyCommands(
 		tgbotapi.BotCommand{
 			Command:     startCommand,
-			Description: "Starting pomodoro timer",
+			Description: "Start pomodoro timer",
 		},
 		tgbotapi.BotCommand{
 			Command:     finishCommand,
-			Description: "Finishing pomodoro timer",
+			Description: "Finish pomodoro timer",
 		},
 	)
 
@@ -41,7 +41,7 @@ func NewApp(token string) (App, error) {
 
 	return App{
 		bot:   bot,
-		users: make(map[string]worker),
+		users: make(map[int64]worker),
 	}, nil
 }
 
@@ -59,11 +59,11 @@ func (a App) Run(ctx context.Context) {
 		case update := <-updates:
 			if update.Message != nil {
 				msg := update.Message
-				userName := msg.From.UserName
+				userID := msg.From.ID
 				log.Println("Obtained a message from bot:", msg.Command())
 
 				if msg.Command() == startCommand[1:] {
-					if _, ok := a.users[userName]; ok {
+					if _, ok := a.users[userID]; ok {
 						a.SendMessage(msg, "Your Pomodoro timer is already working")
 						continue
 					}
@@ -73,18 +73,18 @@ func (a App) Run(ctx context.Context) {
 						chatID: msg.Chat.ID,
 						ctx:    make(chan struct{}),
 					}
-					a.users[userName] = newWorker
+					a.users[userID] = newWorker
 
-					a.SendMessage(msg, "Your Pomodoro timer is started")
-					go a.users[userName].Run()
+					a.SendMessage(msg, "Your Pomodoro timer has started! Now go to work")
+					go a.users[userID].Run()
 
 					continue
 				}
 
-				if _, ok := a.users[userName]; ok {
-					a.SendMessage(msg, "Your Pomodoro timer is stopped")
-					a.users[userName].Stop()
-					delete(a.users, userName)
+				if _, ok := a.users[userID]; ok {
+					a.SendMessage(msg, "Your Pomodoro timer has stopped. See you next time!")
+					a.users[userID].Stop()
+					delete(a.users, userID)
 					continue
 				}
 
