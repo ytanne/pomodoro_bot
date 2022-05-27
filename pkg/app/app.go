@@ -6,7 +6,6 @@ import (
 	"log"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
-	"github.com/ytanne/pomodoro_bot/pkg/config"
 )
 
 const (
@@ -19,8 +18,8 @@ type App struct {
 	users map[string]worker
 }
 
-func NewApp(cfg config.Config) (App, error) {
-	bot, err := tgbotapi.NewBotAPI(cfg.TelegramBotToken)
+func NewApp(token string) (App, error) {
+	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		return App{}, fmt.Errorf("could not get new telegram bot api: %w", err)
 	}

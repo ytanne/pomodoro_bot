@@ -9,20 +9,13 @@ import (
 	"syscall"
 
 	"github.com/ytanne/pomodoro_bot/pkg/app"
-	"github.com/ytanne/pomodoro_bot/pkg/config"
 )
 
 func main() {
-	configPath := flag.String("config", "config.yaml", "Config file to run the bot")
+	token := flag.String("token", "", "Token of Telegram bot")
 	flag.Parse()
 
-	cfg, err := config.NewConfig(*configPath)
-	if err != nil {
-		log.Println("Could not get config:", err)
-		os.Exit(1)
-	}
-
-	program, err := app.NewApp(cfg)
+	program, err := app.NewApp(*token)
 	if err != nil {
 		log.Println("Could not create new Pomodoro program:", err)
 		os.Exit(1)
