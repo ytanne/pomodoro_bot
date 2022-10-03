@@ -170,7 +170,7 @@ func retrieveInputDuration(arg string) (int, error) {
 }
 
 func (a App) SendMessage(msg *tgbotapi.Message, format string, values ...interface{}) {
-	msgText := fmt.Sprintf(format, values)
+	msgText := fmt.Sprintf(format, values...)
 	newMsg := tgbotapi.NewMessage(msg.Chat.ID, msgText)
 	newMsg.ReplyToMessageID = msg.MessageID
 	if _, err := a.bot.Send(newMsg); err != nil {
