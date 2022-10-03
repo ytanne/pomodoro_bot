@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . .
 RUN go build -ldflags="-s -w" -o pomodoro_bot /app/main.go
 
-FROM alpine
+FROM scratch
 WORKDIR /app
 COPY --from=base /app/pomodoro_bot .
 CMD [ "/app/pomodoro_bot"]
