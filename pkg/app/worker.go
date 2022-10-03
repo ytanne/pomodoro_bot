@@ -13,23 +13,24 @@ const (
 	working = iota
 	chilling
 
-	workingPeriod  = 25 * time.Minute
-	chillingPeriod = 5 * time.Minute
-
-	workingMsg  = "It's working time"
-	chillingMsg = "It's time to chill"
+	workingMsg            = "It's working time"
+	chillingMsg           = "It's time to chill"
+	defaultHustlingPeriod = 25 * time.Minute
+	defaultChillingPeriod = 5 * time.Minute
 )
 
 type worker struct {
-	current condition
-	bot     *tgbotapi.BotAPI
-	chatID  int64
-	ctx     chan struct{}
+	current        condition
+	bot            *tgbotapi.BotAPI
+	chatID         int64
+	ctx            chan struct{}
+	hustlingPeriod time.Duration
+	chillingPeriod time.Duration
 }
 
 func (w worker) Run() {
 	w.current = working
-	ticker := time.NewTicker(workingPeriod)
+	ticker := time.NewTicker(w.hustlingPeriod)
 
 	for {
 		select {
@@ -41,13 +42,13 @@ func (w worker) Run() {
 				w.current = chilling
 
 				w.SendMessage(chillingMsg)
-				ticker.Reset(chillingPeriod)
+				ticker.Reset(w.chillingPeriod)
 				continue
 			}
 
 			w.current = working
 			w.SendMessage(workingMsg)
-			ticker.Reset(workingPeriod)
+			ticker.Reset(w.hustlingPeriod)
 		}
 	}
 }
