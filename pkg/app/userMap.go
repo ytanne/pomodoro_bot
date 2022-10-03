@@ -9,12 +9,12 @@ func (a App) LaunchTimer(userID int64) error {
 	a.mutex.Lock()
 	defer a.mutex.Unlock()
 
-	_, ok := a.users[userID]
+	user, ok := a.users[userID]
 	if !ok {
 		return fmt.Errorf("id - %d; error - %w", userID, ErrUserDoesNotExist)
 	}
 
-	a.users[userID].Run()
+	go user.Run()
 	return nil
 }
 

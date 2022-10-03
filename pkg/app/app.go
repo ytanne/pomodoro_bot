@@ -15,8 +15,8 @@ import (
 const (
 	startCommand   = "/start"
 	finishCommand  = "/finish"
-	setRestTime    = "/setRestTime"
-	setWorkingTime = "/setWorkTime"
+	setRestTime    = "/set_rest_time"
+	setWorkingTime = "/set_work_time"
 )
 
 var (
@@ -101,14 +101,12 @@ func (a App) Run(ctx context.Context) {
 						continue
 					}
 
-					go func(userID int64) {
-						if err := a.LaunchTimer(userID); err != nil {
-							a.SendMessage(msg, "Could not start Pomodoro timer. Contact administrator about potential bug")
-							return
-						}
+					if err := a.LaunchTimer(userID); err != nil {
+						a.SendMessage(msg, "Could not start Pomodoro timer. Contact administrator about potential bug")
+						return
+					}
 
-						a.SendMessage(msg, "Your Pomodoro timer has started! Now go to work")
-					}(userID)
+					a.SendMessage(msg, "Your Pomodoro timer has started! Now go to work")
 				case finishCommand[1:]:
 					if err := a.StopTimer(userID); err != nil {
 						a.SendMessage(msg, "You don't have a Pomodoro timer launched")
@@ -145,7 +143,9 @@ func (a App) Run(ctx context.Context) {
 						a.SendMessage(msg, "You don't have a Pomodoro timer launched")
 						continue
 					}
-					a.SendMessage(msg, fmt.Sprintf("Your rest time is updated to %d minutes", hustlingTimePeriod))
+					a.SendMessage(msg, fmt.Sprintf("Your work time is updated to %d minutes", hustlingTimePeriod))
+				default:
+					a.SendMessage(msg, "unknow command obtained - %s", msg.Command())
 				}
 			}
 		}
